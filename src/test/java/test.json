@@ -1,0 +1,60 @@
+{
+  "href": "2/?child_ph=2e10567a-7c10-4bdf-ad60-ce44a0b3509c",
+  "ringtone_on": false,
+  "small_notification": {
+    "app": {
+      "text": "App",
+      "attribute": {
+        "color": "#ffff00",
+        "bold": true,
+        "italic": false
+      }
+    },
+    "title": {
+      "text": "Not",
+      "attribute": {
+        "color": "#ffff00",
+        "bold": true
+      }
+    },
+    "icon": "3",
+    "body": [
+      {
+        "text": "4"
+      }
+    ]
+  },
+  "big_notification": {
+    "app": {
+      "text": "App",
+      "attribute": {
+        "color": "#ffff00",
+        "bold": true,
+        "italic": false
+      }
+    },
+    "title": {
+      "text": "Notification",
+      "attribute": {
+        "color": "#ffff00",
+        "bold": true,
+        "italic": false
+      }
+    },
+    "icon": "1",
+    "body": [
+      {
+        "text": "Big content"
+      }
+    ],
+    "image": "2",
+    "buttons": [
+      {
+        "color": "#000000",
+        "text": "",
+        "link": "/?child_ph=2e10567a-7c10-4bdf-ad60-ce44a0b3509c",
+        "position": "M"
+      }
+    ]
+  }
+}
