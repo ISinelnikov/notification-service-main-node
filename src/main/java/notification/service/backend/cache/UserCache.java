@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 
 import static notification.service.utils.CacheUtils.buildLoadingCache;
+import static notification.service.utils.CacheUtils.getValue;
 import static notification.service.utils.CacheUtils.updateListByMap;
 
 @Service
@@ -51,7 +52,7 @@ public class UserCache {
 
     @Nullable
     public UserProfile findUserProfileById(String userId) {
-        return idToProfileCache.get(userId).orElse(null);
+        return getValue(idToProfileCache.get(userId));
     }
 
     public void addUserProfile(UserProfile profile) throws ModelModificationException {

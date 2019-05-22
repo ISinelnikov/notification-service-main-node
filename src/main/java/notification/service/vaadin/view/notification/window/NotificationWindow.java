@@ -5,6 +5,7 @@ import notification.service.domain.notification.firebase.NotificationTemplate;
 import notification.service.domain.notification.firebase.base.RingtoneType;
 import notification.service.domain.notification.firebase.base.SendingMode;
 import notification.service.domain.notification.firebase.base.VibrationType;
+import notification.service.domain.notification.rich.RichTemplate;
 import notification.service.vaadin.common.CrudService;
 import notification.service.vaadin.common.DialogUtils;
 
@@ -24,8 +25,6 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 
-import static notification.service.domain.notification.firebase.base.SendingMode.BIG_NOTIFICATION;
-import static notification.service.domain.notification.firebase.base.SendingMode.SMALL_AND_BIG_NOTIFICATION;
 import static notification.service.domain.notification.firebase.base.SendingMode.SMALL_NOTIFICATION;
 import static notification.service.vaadin.common.TextFieldUtils.initSimpleTextFiled;
 import static notification.service.vaadin.common.TextFieldUtils.initSimpleTextFiledWithEmptyValidator;
@@ -43,14 +42,6 @@ public class NotificationWindow {
     //-- Internal field
     private TextField templateTitle;
 
-    private ComboBox<RingtoneType> ringtoneTypes;
-    private ComboBox<VibrationType> vibrationTypes;
-
-    private ComboBox<SendingMode> sendingMode;
-
-    private SmallTemplateComponent smallTemplateComponent;
-    private BigTemplateComponent bigTemplateComponent;
-
     private TextField bodyHref;
     private TextField topImageUrl;
 
@@ -59,20 +50,20 @@ public class NotificationWindow {
     private Tab smallNotification;
     private Tab bigNotification;
 
-    private final Binder<NotificationTemplate> binder = new Binder<>(NotificationTemplate.class);
+    private final Binder<RichTemplate> binder = new Binder<>(RichTemplate.class);
 
-    public NotificationWindow(CrudService<NotificationTemplate> templateCrudService) {
+    public NotificationWindow(CrudService<RichTemplate> templateCrudService) {
         Objects.requireNonNull(templateCrudService, "Template crud service can't be null.");
 
         dialog = DialogUtils.initDialog(800);
 
-        initMainLayout(new NotificationTemplate());
+        initMainLayout(new RichTemplate());
 
         confirm.addClickListener(event -> {
             boolean validateNotifications = validateNotifications();
             if (binder.validate().isOk() && validateNotifications) {
                 blockAllFields();
-                NotificationTemplate template = binder.getBean();
+                RichTemplate template = binder.getBean();
                 template.setSmallNotification(smallTemplateComponent.getCurrentNotificationDto());
                 template.setBigNotification(bigTemplateComponent.getCurrentNotificationDto());
 
@@ -92,22 +83,11 @@ public class NotificationWindow {
     }
 
     private boolean validateNotifications() {
-        boolean smallTemplateIsValid = true;
-        boolean bigTemplateIsValid = true;
-
-        SendingMode currentMode = sendingMode.getValue();
-        if (currentMode == SMALL_NOTIFICATION || currentMode == SMALL_AND_BIG_NOTIFICATION) {
-            smallTemplateIsValid = smallTemplateComponent.validate();
-        }
-        if (currentMode == BIG_NOTIFICATION || currentMode == SMALL_AND_BIG_NOTIFICATION) {
-            bigTemplateIsValid = bigTemplateComponent.validate();
-        }
-
-        return smallTemplateIsValid && bigTemplateIsValid;
+        return false;
     }
 
-    public NotificationWindow(CrudService<NotificationTemplate> templateCrudService,
-            NotificationTemplate template, boolean isEditable) {
+    public NotificationWindow(CrudService<RichTemplate> templateCrudService,
+            RichTemplate template, boolean isEditable) {
         Objects.requireNonNull(templateCrudService, "Template crud service can't be null.");
         Objects.requireNonNull(template, "Template can't be null.");
 

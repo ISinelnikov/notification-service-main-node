@@ -8,6 +8,7 @@ import notification.service.backend.service.FirebaseCredentialsService;
 import notification.service.backend.service.UserService;
 import notification.service.domain.notification.firebase.NotificationTemplate;
 import notification.service.domain.notification.rich.RichNotification;
+import notification.service.domain.notification.rich.RichTemplate;
 import notification.service.domain.notification.rich.component.RichWrapper;
 import notification.service.utils.HttpUtils;
 import notification.service.utils.JsonUtils;
@@ -64,7 +65,7 @@ public class NotificationSendingService {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    public String sendNotification(NotificationTemplate template, String userId) throws NotificationSendingException {
+    public String sendNotification(RichTemplate template, String userId) throws NotificationSendingException {
         return sendRichNotification(template, userId);
     }
 

@@ -2,12 +2,8 @@ package notification.service.backend.repository;
 
 import notification.service.backend.repository.base.AbstractDao;
 import notification.service.backend.repository.base.ModelModificationException;
-import notification.service.domain.notification.firebase.BigNotificationDto;
-import notification.service.domain.notification.firebase.NotificationTemplate;
-import notification.service.domain.notification.firebase.SmallNotificationDto;
-import notification.service.domain.notification.firebase.base.RingtoneType;
-import notification.service.domain.notification.firebase.base.SendingMode;
-import notification.service.domain.notification.firebase.base.VibrationType;
+import notification.service.domain.notification.rich.RichTemplate;
+import notification.service.domain.notification.rich.component.RichTextElement;
 import notification.service.utils.JsonUtils;
 
 import java.util.Collections;
@@ -65,7 +61,7 @@ public class NotificationTemplateRepository extends AbstractDao {
         super(jdbcTemplate);
     }
 
-    public List<NotificationTemplate> getAllNotificationTemplate() {
+    public List<RichTemplate> getAllNotificationTemplate() {
         try {
             return npjtTemplate.query(SQL_SELECT_ALL_NOTIFICATION_TEMPLATE, getNotificationTemplateRowMapper());
         } catch (DataAccessException ex) {
@@ -74,7 +70,7 @@ public class NotificationTemplateRepository extends AbstractDao {
         return Collections.emptyList();
     }
 
-    public void addNotificationTemplate(NotificationTemplate template) throws ModelModificationException {
+    public void addNotificationTemplate(RichTemplate template) throws ModelModificationException {
         MapSqlParameterSource parameterSource = getParameterSourceByNotificationTemplate(template);
 
         try {
@@ -85,7 +81,7 @@ public class NotificationTemplateRepository extends AbstractDao {
         }
     }
 
-    public void updateNotificationTemplate(NotificationTemplate template) throws ModelModificationException {
+    public void updateNotificationTemplate(RichTemplate template) throws ModelModificationException {
         MapSqlParameterSource parameterSource = getParameterSourceByNotificationTemplate(template);
 
         try {
@@ -96,7 +92,7 @@ public class NotificationTemplateRepository extends AbstractDao {
         }
     }
 
-    public void removeNotificationTemplate(NotificationTemplate template) throws ModelModificationException {
+    public void removeNotificationTemplate(RichTemplate template) throws ModelModificationException {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource("template_id", template.getTemplateId());
 
         try {
@@ -108,7 +104,7 @@ public class NotificationTemplateRepository extends AbstractDao {
     }
 
     @Nullable
-    public NotificationTemplate getNotificationTemplateById(String id) {
+    public RichTemplate getNotificationTemplateById(String id) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource("template_id", id);
 
         try {
@@ -123,38 +119,17 @@ public class NotificationTemplateRepository extends AbstractDao {
         return null;
     }
 
-    private static MapSqlParameterSource getParameterSourceByNotificationTemplate(NotificationTemplate template) {
+    private static MapSqlParameterSource getParameterSourceByNotificationTemplate(RichTemplate template) {
         MapSqlParameterSource parameterSource = new MapSqlParameterSource();
-
-
-        parameterSource.addValue("template_id", template.getTemplateId());
-        parameterSource.addValue("template_title", template.getTemplateTitle());
-        parameterSource.addValue("sending_mode", template.getSendingMode().getAlias());
-        parameterSource.addValue("notification_url", template.getNotificationUrl());
-        parameterSource.addValue("top_image_url", template.getTopImageUrl());
-        parameterSource.addValue("vibration_type", template.getVibrationType() == null ?
-                null : template.getVibrationType().getAlias());
-        parameterSource.addValue("ringtone", template.getRingtoneType().isPosition());
-        parameterSource.addValue("small_notification",
-                JsonUtils.convertObjectToJson(template.getSmallNotification()));
-        parameterSource.addValue("big_notification",
-                JsonUtils.convertObjectToJson(template.getBigNotification()));
 
         return parameterSource;
     }
 
-    private static RowMapper<NotificationTemplate> getNotificationTemplateRowMapper() {
-        return (resultSet, i) -> new NotificationTemplate(
+    private static RowMapper<RichTemplate> getNotificationTemplateRowMapper() {
+        return (resultSet, i) -> new RichTemplate(
                 resultSet.getString("template_id"),
-                resultSet.getString("template_title"),
-                SendingMode.findSendingModeByAlias(resultSet.getString("sending_mode")),
-                resultSet.getString("notification_url"),
-                resultSet.getString("top_image_url"),
-                //Notification sound and vibration
-                VibrationType.findVibrationTypeByAlias(resultSet.getString("vibration_type")),
-                RingtoneType.getTypeByPosition(resultSet.getBoolean("ringtone")),
-                JsonUtils.convertJsonToObject(resultSet.getString("small_notification"), SmallNotificationDto.class),
-                JsonUtils.convertJsonToObject(resultSet.getString("big_notification"), BigNotificationDto.class)
+                JsonUtils.convertJsonToList(resultSet.getString("notification_body"),
+                        RichTextElement.class)
         );
     }
 }

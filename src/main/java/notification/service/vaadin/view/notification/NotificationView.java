@@ -1,7 +1,7 @@
 package notification.service.vaadin.view.notification;
 
 import notification.service.backend.repository.base.ModelModificationException;
-import notification.service.domain.notification.firebase.NotificationTemplate;
+import notification.service.domain.notification.rich.RichTemplate;
 import notification.service.vaadin.MainLayout;
 import notification.service.vaadin.common.DialogUtils;
 import notification.service.vaadin.common.TextFieldUtils;
@@ -32,7 +32,7 @@ public class NotificationView extends HorizontalLayout {
     private final NotificationDialogService dialogService;
     private final NotificationGrid notificationGrid;
     private final NotificationCrudService notificationCrudService;
-    private final ListDataProvider<NotificationTemplate> notificationTemplateListDataProvider;
+    private final ListDataProvider<RichTemplate> templates;
 
     public NotificationView(@Autowired NotificationDialogService dialogService,
             @Autowired NotificationCrudService notificationCrudService) {
@@ -41,9 +41,9 @@ public class NotificationView extends HorizontalLayout {
         this.notificationCrudService = Objects.requireNonNull(notificationCrudService,
                 "Notification crud service can't be null.");
 
-        notificationTemplateListDataProvider = notificationCrudService.getDataProvider();
+        templates = notificationCrudService.getDataProvider();
         this.notificationGrid = new NotificationGrid();
-        this.notificationGrid.setDataProvider(notificationTemplateListDataProvider);
+        this.notificationGrid.setDataProvider(templates);
 
         initContextMenu();
 
@@ -62,7 +62,7 @@ public class NotificationView extends HorizontalLayout {
     }
 
     private void initContextMenu() {
-        GridContextMenu<NotificationTemplate> contextMenu = notificationGrid.addContextMenu();
+        GridContextMenu<RichTemplate> contextMenu = notificationGrid.addContextMenu();
         contextMenu.addItem("View", TextFieldUtils.getItemClickEvent(item ->
                 item.ifPresent(dialogService::openExistNotificationTemplateReadOnly)));
         contextMenu.addItem("Edit", TextFieldUtils.getItemClickEvent(item ->
@@ -84,25 +84,30 @@ public class NotificationView extends HorizontalLayout {
                 event -> dialogService.openEmptyNotificationTemplate(),
                 event -> {
                     String value = event.getValue();
-                    notificationTemplateListDataProvider.setFilter((SerializablePredicate<NotificationTemplate>) template ->
+                    templates.setFilter((SerializablePredicate<RichTemplate>) template ->
                             template.getTemplateTitle().contains(value) || template.getTemplateId().contains(value));
                 });
     }
 
-    public static class NotificationGrid extends Grid<NotificationTemplate> {
+    public static class NotificationGrid extends Grid<RichTemplate> {
         private static final long serialVersionUID = -154566778461664742L;
 
         private static final String TEMPLATE_ID = "Template ID";
         private static final String TEMPLATE_TITLE = "Template title";
+        private static final String INTERNAL_TITLE = "Internal title";
 
         public NotificationGrid() {
             setSizeFull();
-            addColumn(NotificationTemplate::getTemplateId)
+            addColumn(RichTemplate::getTemplateId)
                     .setHeader(TEMPLATE_ID)
                     .setFlexGrow(5);
-            addColumn(NotificationTemplate::getTemplateTitle)
+            addColumn(RichTemplate::getInternalTitle)
+                    .setHeader(INTERNAL_TITLE)
+                    .setFlexGrow(10)
+                    .setSortable(true);
+            addColumn(RichTemplate::getTemplateTitle)
                     .setHeader(TEMPLATE_TITLE)
-                    .setFlexGrow(15)
+                    .setFlexGrow(10)
                     .setSortable(true);
         }
     }

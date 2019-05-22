@@ -4,7 +4,7 @@ import notification.service.backend.domain.UserProfile;
 import notification.service.backend.service.NotificationTemplateService;
 import notification.service.backend.service.notification.NotificationSendingException;
 import notification.service.backend.service.notification.NotificationSendingService;
-import notification.service.domain.notification.firebase.NotificationTemplate;
+import notification.service.domain.notification.rich.RichTemplate;
 
 import java.util.Objects;
 import org.springframework.stereotype.Component;
@@ -37,19 +37,14 @@ public class SendingNotificationForm {
         userId.setReadOnly(true);
         userId.setSizeFull();
 
-        TextField userPackage = new TextField("User package");
-        userPackage.setValue(userProfile.getPackageName());
-        userPackage.setReadOnly(true);
-        userPackage.setSizeFull();
-
-        TextField notificationId = new TextField("Notification id");
-        notificationId.setValue(userProfile.getNotificationId());
+        TextField notificationId = new TextField("Email address: ");
+        notificationId.setValue(userProfile.getEmailAddress());
         notificationId.setReadOnly(true);
         notificationId.setSizeFull();
 
-        ComboBox<NotificationTemplate> templates = new ComboBox<>("Template");
+        ComboBox<RichTemplate> templates = new ComboBox<>("Template");
         templates.setItems(templateService.getAllNotificationTemplate());
-        templates.setItemLabelGenerator(NotificationTemplate::getTemplateTitle);
+        templates.setItemLabelGenerator(RichTemplate::getTemplateTitle);
         templates.setRequired(true);
         templates.setSizeFull();
 
@@ -59,7 +54,7 @@ public class SendingNotificationForm {
         Button cancel = new Button("Cancel", event -> dialog.close());
         cancel.setSizeFull();
         Button send = new Button("Send", event -> {
-            NotificationTemplate value = templates.getValue();
+            RichTemplate value = templates.getValue();
             if (value != null) {
                 try {
                     String status = notificationSendingService.sendNotification(value, userProfile.getUserId());
@@ -75,7 +70,7 @@ public class SendingNotificationForm {
         buttonLayout.add(cancel, send);
 
         VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.add(userId, userPackage, notificationId, templates, buttonLayout);
+        mainLayout.add(userId, notificationId, templates, buttonLayout);
         dialog.add(mainLayout);
         dialog.open();
     }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 
 import static notification.service.utils.CacheUtils.buildLoadingCache;
+import static notification.service.utils.CacheUtils.getValue;
 import static notification.service.utils.CacheUtils.updateListByMap;
 
 @Service
@@ -85,7 +86,7 @@ public class SecurityEntityCache {
 
     @Nullable
     public SecurityEntity findSecurityEntityByTokenValue(String securityToken) {
-        return tokenToEntity.get(securityToken).orElse(null);
+        return getValue(tokenToEntity.get(securityToken));
     }
 
     private Optional<SecurityEntity> getEntityByTokenValue(String tokenValue) {
@@ -96,7 +97,7 @@ public class SecurityEntityCache {
     //-- Entity by id
     @Nullable
     public SecurityEntity findSecurityEntityById(String rowId) {
-        return idToEntity.get(rowId).orElse(null);
+        return getValue(idToEntity.get(rowId));
     }
 
     private Optional<SecurityEntity> getEntityById(String rowId) {

@@ -3,10 +3,8 @@ package notification.service.backend.service;
 import notification.service.backend.cache.UserCache;
 import notification.service.backend.domain.SecurityEntity;
 import notification.service.backend.domain.UserProfile;
-import notification.service.backend.repository.user.EventHistoryRepository;
 import notification.service.backend.repository.base.ModelModificationException;
 import notification.service.domain.ServerRegistrationDto;
-import notification.service.domain.user.EventHistoryRow;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,15 +18,10 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    private final BinomIntegration binomIntegration;
     private final UserCache userCache;
-    private final EventHistoryRepository historyRepository;
 
-    public UserService(BinomIntegration binomIntegration, UserCache userCache, EventHistoryRepository historyRepository) {
-        this.binomIntegration = Objects.requireNonNull(binomIntegration, "Binom integration can't be null.");
+    public UserService(UserCache userCache) {
         this.userCache = Objects.requireNonNull(userCache, "User cache can't be null.");
-        this.historyRepository = Objects.requireNonNull(historyRepository,
-                "History repository can't be null.");
     }
 
     @Nullable
